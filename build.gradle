@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-group 'com.shuimen.hbasetest'
+group 'com.nick.hbasetest'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
@@ -16,8 +16,8 @@ ext{
 }
 
 repositories {
-//    mavenLocal()
-    maven { url "http://maven-pdd.corp.yiran.com:8081/repository/maven-public/" }
+    mavenLocal()
+    mavenCentral()
 }
 
 configurations {
