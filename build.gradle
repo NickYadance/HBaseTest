@@ -1,0 +1,37 @@
+plugins {
+    id 'java'
+}
+
+group 'com.shuimen.hbasetest'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+ext{
+    log4jVersion = '2.11.0-p1.0.0'
+    log4jBridgeVersion = '2.2'
+    hbaseClientVersion = '1.1.2'
+    hbaseServerVersion = '1.1.2'
+    hbaseUtilVersion = '1.1.2'
+}
+
+repositories {
+//    mavenLocal()
+    maven { url "http://maven-pdd.corp.yiran.com:8081/repository/maven-public/" }
+}
+
+configurations {
+    all*.exclude group: "tomcat", module: "jasper-runtime"
+}
+
+dependencies {
+    compile "org.apache.logging.log4j:log4j-core:$log4jVersion"
+    compile "org.apache.logging.log4j:log4j-api:$log4jVersion"
+    compile "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
+    compile "org.apache.logging.log4j:log4j-1.2-api:$log4jBridgeVersion"
+    compile "org.apache.hbase:hbase-client:$hbaseClientVersion"
+    compile "org.apache.hbase:hbase:$hbaseClientVersion"
+    compile group: 'org.apache.hbase', name: 'hbase-server', version: "$hbaseServerVersion"
+    compile group: 'org.apache.hbase', name: 'hbase-testing-util', version: "$hbaseUtilVersion"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
