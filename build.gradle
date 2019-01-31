@@ -10,9 +10,7 @@ sourceCompatibility = 1.8
 ext{
     log4jVersion = '2.11.0-p1.0.0'
     log4jBridgeVersion = '2.2'
-    hbaseClientVersion = '1.1.2'
-    hbaseServerVersion = '1.1.2'
-    hbaseUtilVersion = '1.1.2'
+    hbaseVersion = '2.1.1'
 }
 
 repositories {
@@ -29,9 +27,9 @@ dependencies {
     compile "org.apache.logging.log4j:log4j-api:$log4jVersion"
     compile "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
     compile "org.apache.logging.log4j:log4j-1.2-api:$log4jBridgeVersion"
-    compile "org.apache.hbase:hbase-client:$hbaseClientVersion"
-    compile "org.apache.hbase:hbase:$hbaseClientVersion"
-    compile group: 'org.apache.hbase', name: 'hbase-server', version: "$hbaseServerVersion"
-    compile group: 'org.apache.hbase', name: 'hbase-testing-util', version: "$hbaseUtilVersion"
+    compile "org.apache.hbase:hbase-client:$hbaseVersion"
+    compile "org.apache.hbase:hbase:$hbaseVersion"
+    compile group: 'org.apache.hbase', name: 'hbase-server', version: "$hbaseVersion"
+    compile group: 'org.apache.hbase', name: 'hbase-testing-util', version: "$hbaseVersion"
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

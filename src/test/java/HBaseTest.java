@@ -1,23 +1,8 @@
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HBaseTestingUtility;
-import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.HConstants;
-import org.apache.hadoop.hbase.HRegionInfo;
-import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.MiniHBaseCluster;
-import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.Admin;
-import org.apache.hadoop.hbase.client.BufferedMutator;
-import org.apache.hadoop.hbase.client.Connection;
-import org.apache.hadoop.hbase.client.ConnectionFactory;
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.ResultScanner;
-import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.*;
+import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.filter.PageFilter;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.CollectionUtils;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,7 +22,7 @@ public class HBaseTest {
 	private static final String QUALIFIER = "a";
 	private static final String VALUE = "value";
 	private static final int PAGE_SZE = 1000;
-	private static final int CACHING = 200;
+	private static final int CACHING = 300;
 	private static final String[] splitPoints = new String[]{"000", "111", "222", "333", "444", "555" };
 
 	private static Configuration CONFIG;
@@ -119,8 +104,8 @@ public class HBaseTest {
 		// 不做分页过滤
 		// 对Region做count
 		long count = doScan(new Scan()
-				.setStartRow(startRow.getBytes())
-				.setStopRow(stopRow.getBytes())
+				.withStartRow(startRow.getBytes())
+				.withStopRow(stopRow.getBytes())
 				.addColumn(COLUMN_FAMILY.getBytes(), QUALIFIER.getBytes())).size();
 
 		// 做分页过滤
@@ -137,8 +122,8 @@ public class HBaseTest {
 		// 不做分页过滤
 		// 对Region做count
 		long count = doScan(new Scan()
-				.setStartRow(startRow.getBytes())
-				.setStopRow(stopRow.getBytes())
+				.withStartRow(startRow.getBytes())
+				.withStopRow(stopRow.getBytes())
 				.addColumn(COLUMN_FAMILY.getBytes(), QUALIFIER.getBytes())).size();
 
 		// 做分页过滤
@@ -155,8 +140,8 @@ public class HBaseTest {
 		// 不做分页过滤
 		// 对Region做count
 		long count = doScan(new Scan()
-				.setStartRow(startRow.getBytes())
-				.setStopRow(stopRow.getBytes())
+				.withStartRow(startRow.getBytes())
+				.withStopRow(stopRow.getBytes())
 				.addColumn(COLUMN_FAMILY.getBytes(), QUALIFIER.getBytes())).size();
 
 		// 做分页过滤
@@ -173,8 +158,8 @@ public class HBaseTest {
 		// 不做分页过滤
 		// 对Region做count
 		long count = doScan(new Scan()
-				.setStartRow(startRow.getBytes())
-				.setStopRow(stopRow.getBytes())
+				.withStartRow(startRow.getBytes())
+				.withStopRow(stopRow.getBytes())
 				.addColumn(COLUMN_FAMILY.getBytes(), QUALIFIER.getBytes())).size();
 
 		// 做分页过滤
@@ -194,13 +179,13 @@ public class HBaseTest {
 			while (true) {
 				long tStart = System.currentTimeMillis();
 				Scan scan = new Scan()
-						.setStartRow(start)
-						.setStopRow(stop)
+						.withStartRow(start)
+						.withStopRow(stop)
 						.addColumn(COLUMN_FAMILY.getBytes(), QUALIFIER.getBytes())
 						.setCaching(CACHING)
 						.setFilter(new PageFilter(PAGE_SZE));
 				resultList = doScan(scan);
-				if (CollectionUtils.isEmpty(resultList)) {
+				if (resultList == null || resultList.isEmpty()) {
 					break;
 				}
 				if (resultList.size() > PAGE_SZE){
