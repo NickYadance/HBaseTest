@@ -3,3 +3,6 @@
 .out
 gradlew
 gradlew.bat
+gradle
+out
+target
