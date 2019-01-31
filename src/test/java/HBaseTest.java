@@ -1,9 +1,9 @@
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.filter.PageFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -13,41 +13,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HBaseTest {
-
-	private static Logger logger = LoggerFactory.getLogger(HBaseTest.class);
-
-	private static final String TABLE = "testTable";
-	private static final String COLUMN_FAMILY = "cf";
-	private static final String QUALIFIER = "a";
-	private static final String VALUE = "value";
-	private static final int PAGE_SZE = 1000;
-	private static final int CACHING = 300;
-	private static final String[] splitPoints = new String[]{"000", "111", "222", "333", "444", "555" };
-
-	private static Configuration CONFIG;
-	private static HBaseTestingUtility utility;
-	private static MiniHBaseCluster hBaseCluster;
-	private static Connection connection;
-
-	static {
-		utility = new HBaseTestingUtility();
-		try{
-			hBaseCluster = utility.startMiniCluster(2);
-			CONFIG  = hBaseCluster.getConf();
-			connection = ConnectionFactory.createConnection(CONFIG);
-		} catch (Exception e){
-			logger.error("HBaseTest static init error: {}", e);
-		}
-	}
+public class HBaseTest extends BaseTest{
+    public static Logger logger = LoggerFactory.getLogger(HBaseTest.class);
 
 	@BeforeClass
-	public static void init(){
+	public static void dump(){
 		// 建表
 		try(Admin admin = connection.getAdmin()){
 			TableName tableName = TableName.valueOf(TABLE);
 			if (admin.tableExists(tableName)){
-				logger.warn("init table {} already exists, to be deleted", tableName);
 				admin.disableTable(tableName);
 				admin.deleteTable(tableName);
 			}
