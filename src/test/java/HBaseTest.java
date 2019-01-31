@@ -1,24 +1,9 @@
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HBaseTestingUtility;
-import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.HConstants;
-import org.apache.hadoop.hbase.HRegionInfo;
-import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.MiniHBaseCluster;
-import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.Admin;
-import org.apache.hadoop.hbase.client.BufferedMutator;
-import org.apache.hadoop.hbase.client.Connection;
-import org.apache.hadoop.hbase.client.ConnectionFactory;
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.ResultScanner;
-import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.*;
+import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.filter.PageFilter;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.CollectionUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -28,41 +13,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HBaseTest {
-
-	private static Logger logger = LoggerFactory.getLogger(HBaseTest.class);
-
-	private static final String TABLE = "testTable";
-	private static final String COLUMN_FAMILY = "cf";
-	private static final String QUALIFIER = "a";
-	private static final String VALUE = "value";
-	private static final int PAGE_SZE = 1000;
-	private static final int CACHING = 200;
-	private static final String[] splitPoints = new String[]{"000", "111", "222", "333", "444", "555" };
-
-	private static Configuration CONFIG;
-	private static HBaseTestingUtility utility;
-	private static MiniHBaseCluster hBaseCluster;
-	private static Connection connection;
-
-	static {
-		utility = new HBaseTestingUtility();
-		try{
-			hBaseCluster = utility.startMiniCluster(2);
-			CONFIG  = hBaseCluster.getConf();
-			connection = ConnectionFactory.createConnection(CONFIG);
-		} catch (Exception e){
-			logger.error("HBaseTest static init error: {}", e);
-		}
-	}
+public class HBaseTest extends BaseTest{
+    public static Logger logger = LoggerFactory.getLogger(HBaseTest.class);
 
 	@BeforeClass
-	public static void init(){
+	public static void dump(){
 		// 建表
 		try(Admin admin = connection.getAdmin()){
 			TableName tableName = TableName.valueOf(TABLE);
 			if (admin.tableExists(tableName)){
-				logger.warn("init table {} already exists, to be deleted", tableName);
 				admin.disableTable(tableName);
 				admin.deleteTable(tableName);
 			}
@@ -119,8 +78,8 @@ public class HBaseTest {
 		// 不做分页过滤
 		// 对Region做count
 		long count = doScan(new Scan()
-				.setStartRow(startRow.getBytes())
-				.setStopRow(stopRow.getBytes())
+				.withStartRow(startRow.getBytes())
+				.withStopRow(stopRow.getBytes())
 				.addColumn(COLUMN_FAMILY.getBytes(), QUALIFIER.getBytes())).size();
 
 		// 做分页过滤
@@ -137,8 +96,8 @@ public class HBaseTest {
 		// 不做分页过滤
 		// 对Region做count
 		long count = doScan(new Scan()
-				.setStartRow(startRow.getBytes())
-				.setStopRow(stopRow.getBytes())
+				.withStartRow(startRow.getBytes())
+				.withStopRow(stopRow.getBytes())
 				.addColumn(COLUMN_FAMILY.getBytes(), QUALIFIER.getBytes())).size();
 
 		// 做分页过滤
@@ -155,8 +114,8 @@ public class HBaseTest {
 		// 不做分页过滤
 		// 对Region做count
 		long count = doScan(new Scan()
-				.setStartRow(startRow.getBytes())
-				.setStopRow(stopRow.getBytes())
+				.withStartRow(startRow.getBytes())
+				.withStopRow(stopRow.getBytes())
 				.addColumn(COLUMN_FAMILY.getBytes(), QUALIFIER.getBytes())).size();
 
 		// 做分页过滤
@@ -173,8 +132,8 @@ public class HBaseTest {
 		// 不做分页过滤
 		// 对Region做count
 		long count = doScan(new Scan()
-				.setStartRow(startRow.getBytes())
-				.setStopRow(stopRow.getBytes())
+				.withStartRow(startRow.getBytes())
+				.withStopRow(stopRow.getBytes())
 				.addColumn(COLUMN_FAMILY.getBytes(), QUALIFIER.getBytes())).size();
 
 		// 做分页过滤
@@ -194,13 +153,13 @@ public class HBaseTest {
 			while (true) {
 				long tStart = System.currentTimeMillis();
 				Scan scan = new Scan()
-						.setStartRow(start)
-						.setStopRow(stop)
+						.withStartRow(start)
+						.withStopRow(stop)
 						.addColumn(COLUMN_FAMILY.getBytes(), QUALIFIER.getBytes())
 						.setCaching(CACHING)
 						.setFilter(new PageFilter(PAGE_SZE));
 				resultList = doScan(scan);
-				if (CollectionUtils.isEmpty(resultList)) {
+				if (resultList == null || resultList.isEmpty()) {
 					break;
 				}
 				if (resultList.size() > PAGE_SZE){
